@@ -1,0 +1,15 @@
+syntax = "proto3";
+package net.phoneyou.gameoflife.bb.descriptor;
+
+import "amster/gbbinfra/DescriptorOptions.proto";
+import "net/phoneyou/gameoflife/bb/Common.proto";
+
+
+//定义网格
+message Dimensions{
+    option (amster.gbbinfra.descriptor_type) = 2003;
+    option (amster.gbbinfra.singleton) = true ;
+
+    uint32 cell_x = 1;
+    uint32 cell_y = 2;
+}
