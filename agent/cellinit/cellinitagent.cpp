@@ -31,6 +31,30 @@ void CellInitAgent::initialize()
         _res.set_status(bb::Status_Enum::Status_Enum_Success);
     });
 
+    //创建cell
+    registerRPCService<bb::message::NewCell , bb::message::NewCellId>("New_Cell",
+        [this](const bb::message::NewCell& _req , bb::message::NewCellId& _res){
+
+        EntityId _metId {};
+
+        CHECK_STATUS_EXT(createAgentEntity(bb::EntityType::Cell, _metId), return );
+
+        bb::descriptor::Position _cellPos;
+        bb::descriptor::CellInfo _cellInfo;
+        _cellPos.set_x(_req.cell_x());
+        _cellPos.set_y(_req.cell_y());
+
+        _cellInfo.set_type(bb::CellType_Enum::Status_Enum_Success);
+        _cellInfo.set_life_cycle(0);
+
+
+        CHECK_STATUS_EXT(writeData(_metId, _cellPos), return );
+        CHECK_STATUS_EXT(writeData(_metId, _cellInfo), return );
+        setEntityReady(_metId);
+
+        _res.set_met_id(_metId);
+    });
+
 
 }
 

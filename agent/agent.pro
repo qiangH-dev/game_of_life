@@ -4,4 +4,4 @@ CONFIG += ordered
 
 SUBDIRS += \
     cellinit \
-
+    simmodel   \

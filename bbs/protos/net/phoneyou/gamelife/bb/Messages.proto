@@ -19,4 +19,14 @@ message Response{
     Status.Enum status = 1;
 }
 
+//创建cell
+message NewCell{
+    uint32 cell_x = 1;
+    uint32 cell_y = 2;
+}
+
+message NewCellId{
+    uint32 met_id = 1;
+}
+
 /**************************************************************************************/
