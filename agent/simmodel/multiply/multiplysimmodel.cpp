@@ -12,12 +12,14 @@
 
 
 MultiplySimModel::MultiplySimModel()
-    : EntitySimModel("MULTIPLY")
+    : EntitySimModel("MultiplySim")
 {
 }
 
 void MultiplySimModel::initialize()
 {
+    LOGF(DBUG , "multiply sim init");
+
     using namespace net::phoneyou::gamelife::bb;
     registerRPCService<bb::message::NewCell , bb::message::NewCellId >("New_Cell",
         [this](const bb::message::NewCell& _req , bb::message::NewCellId& _res){
@@ -63,6 +65,8 @@ StepResult MultiplySimModel::step(
     const GBBTimeContext& _timeContext,
     Entity& _entity)
 {
+    LOGF(DBUG , "multiply sim step");
+
     multiplyCell();
 
     return StepResult::Done;

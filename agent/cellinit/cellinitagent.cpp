@@ -1,4 +1,4 @@
-﻿#include "cellinitagent.h".h"
+﻿#include "cellinitagent.h"
 #include <random>
 #include <unordered_set>
 
@@ -18,6 +18,8 @@ CellInitAgent::CellInitAgent()
 
 void CellInitAgent::initialize()
 {
+
+    LOGF(DBUG , "cell agent init");
     using namespace net::phoneyou::gamelife::bb;
     using namespace net::phoneyou::gamelife::bb::descriptor;
     //初始化网格大小
