@@ -1,0 +1,74 @@
+{
+ "bbclient_config": {
+   "ticktock_verbose":false
+ },
+ "bbcenter_config": {
+  "service": "LMDB",
+  "lmdb": {
+   "db_path": "../share/amster/lmdb/bbs"
+  }
+ },
+ "notification_config": {
+  "service": "NNG"
+ },
+ "gbbinfra_config": {
+  "bbs": [
+   {
+    "dll_path": "AMSTERBB"
+   },
+   {
+    "dll_path": "GAMELIFEBB"
+   }
+  ]
+ },
+ "agent_config": {
+  "coroutine": true,
+  "agents": [
+  {
+   "name": "GAMELIFEAgent",
+   "priority": 100,
+   "provider_name": "GAMELIFE/GAMELIFEInitAgent",
+   "accepted_tickmodes": ["Simulation"]
+   
+  },
+  {
+    "name":"MultiplySim",
+    "priority":100,
+    "entity_agent_extension":{
+      "sim_model": {
+        "providers": [
+         {
+          "dll_path": "GAMELIFE/MultiplySim",
+          "arg_options":[
+          ],
+          "sim_options": {
+           "ExampleSimmodel": {
+            "coroutine": true,
+            "display_name": "MultiplySim",
+            "accepted_tickmodes": ["Simulation"]
+           }
+          }
+         }
+        ]
+       }
+    }
+  }
+  ]
+ },
+ "log_config": {
+  "active": true,
+  "ignore_levels": [
+   
+  ],
+  "console": {
+   "ignore_levels": [
+    
+   ]
+  },
+  "rotating": {
+   "file_path": "../share/amster/logs/GamelifeAgent",
+   "max_files": 3,
+   "file_max_size": 1048576
+  }
+ }
+}

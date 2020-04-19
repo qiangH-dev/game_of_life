@@ -1,0 +1,51 @@
+{
+ "bbclient_config": {
+   "ticktock_verbose":false
+ },
+ "bbcenter_config": {
+  "service": "LMDB",
+  "lmdb": {
+   "db_path": "../share/amster/lmdb/bbs"
+  }
+ },
+ "notification_config": {
+  "service": "NNG"
+ },
+ "gbbinfra_config": {
+  "bbs": [
+   {
+    "dll_path": "AMSTERBB"
+   },
+   {
+    "dll_path": "GAMELIFEBB"
+   }
+  ]
+ },
+ "agent_config": {
+  "coroutine": true,
+  "agents": [
+  {
+   "name": "TestAgent",
+   "priority": 100,
+   "provider_name": "Test/TestAgent"
+   
+  }
+  ]
+ },
+ "log_config": {
+  "active": true,
+  "ignore_levels": [
+   
+  ],
+  "console": {
+   "ignore_levels": [
+    
+   ]
+  },
+  "rotating": {
+   "file_path": "../share/amster/logs/TestAgent",
+   "max_files": 3,
+   "file_max_size": 1048576
+  }
+ }
+}

@@ -1,0 +1,10 @@
+{
+    "agent_launchers": [
+        {
+            "progress_name":"GAMELIFEInitAgent",
+            "enable":false,
+            "configure_file": "Agents/as-GAMELIFEInitAgent.json"
+        }
+    ]
+}
+
