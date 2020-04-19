@@ -3,4 +3,8 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += \
-    gamelifebb \
+    bbs \
+    agent \
+    app \
+    data \
+

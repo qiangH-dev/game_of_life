@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package net.phoneyou.gamelife.bb.message;
+
+import "amster/gbbinfra/MessageOptions.proto";
+import "net/phoneyou/gamelife/bb/Common.proto";
+message SyncDurationTime{
+    bool enable = 1;
+}
+
+//初始化网格大小
+message DimensionsInit{
+    uint32 cell_x = 1;
+    uint32 cell_y = 2;
+}
+
+//
+message Response{
+    Status.Enum status = 1;
+}
+
+/**************************************************************************************/

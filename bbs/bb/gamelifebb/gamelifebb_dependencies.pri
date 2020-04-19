@@ -1,0 +1,11 @@
+AMSTER_LIB_NAME = GAMELIFEBB
+
+AMSTER_LIB_DEPENDS += \
+    gbbinfra \
+    amsterbb \
+
+win32{
+    DEFINES += GAMELIFE_GENERATOR_DLLEXPORT=__declspec(dllimport)
+}else{
+    DEFINES += GAMELIFE_GENERATOR_DLLEXPORT=
+}

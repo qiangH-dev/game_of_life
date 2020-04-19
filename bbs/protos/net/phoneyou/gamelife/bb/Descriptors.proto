@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package net.phoneyou.gamelife.bb.descriptor;
+
+import "amster/gbbinfra/DescriptorOptions.proto";
+import "net/phoneyou/gamelife/bb/Common.proto";
+
+message CellInfo{
+    option (amster.gbbinfra.descriptor_type) = 110;
+    CellType.Enum type = 1;
+    uint32 Life_cycle = 2;     //当前细胞生成时间
+}
+
+message Position{
+    option (amster.gbbinfra.descriptor_type) = 111;
+    int32 x = 1;
+    int32 y = 2;
+}

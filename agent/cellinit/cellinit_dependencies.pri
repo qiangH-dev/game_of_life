@@ -1,0 +1,8 @@
+AMSTER_AGENT_CATEGORY = GAMEOFLIFE
+
+AMSTER_AGENT_NAME = GAMELIFEInit
+
+AMSTER_LIB_DEPENDS += \
+    agent \
+    gamelifebb \
+
