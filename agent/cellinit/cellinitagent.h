@@ -12,7 +12,7 @@ namespace bb = net::phoneyou::gamelife::bb;
 
 class CellInitAgent : public AgentBase {
 public:
-    ScenarioInitAgent();
+    CellInitAgent();
 
     // AgentBase interface
 public:

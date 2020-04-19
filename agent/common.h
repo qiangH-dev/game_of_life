@@ -1,21 +1,24 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <exception>
 #include <stdint.h>
 #include <vector>
 
 namespace gamelife {
-
+//坐标系 以左上角为原点
 struct GridPt {
     GridPt() = default;
     GridPt(int _x , int _y ):x(_x),y(_y){}
+    friend bool operator <(const GridPt& lv , const GridPt& rv);
+
     constexpr bool valid() const noexcept
     {
         return x >= 0 && y >= 0;
     }
 
-    std::vector<GridPt> around8()
+    std::vector<GridPt> around8() const
     {
         static std::vector<GridPt> Degree_8 = {
             { -1, 0 },
@@ -39,7 +42,7 @@ struct GridPt {
         };
         return around(Degree_4);
     }
-    std::vector<GridPt> around(const std::vector<GridPt>& _degree)
+    std::vector<GridPt> around(const std::vector<GridPt>& _degree) const
     {
         std::vector<GridPt> _res;
         _res.reserve(_degree.size());
@@ -55,20 +58,41 @@ struct GridPt {
     int y = { 0 };
 };
 
+bool operator <(const GridPt& lv , const GridPt& rv){
+    double langle = std::atan2(lv.x , lv.y);
+    double rangel = std::atan2(rv.x , rv.y);
+    if(langle == langle){
+        double lr = std::sqrt( (lv.x)*(lv.x) + (lv.y)*(lv.y));
+        double rr = std::sqrt( (rv.x)*(rv.x) + (rv.y)*(rv.y));
+        return lr < rr;
+    }else{
+        return langle < rangel;
+    }
+}
+
 template <typename T>
 class Grid {
 public:
     using value_type = T;
     using contain_type = std::vector<value_type>;
     Grid() noexcept = default;
-    Grid(uint32_t _cellx, uint32_t _celly) noexcept
+    Grid(uint32_t _cellx, uint32_t _celly , contain_type _data) noexcept
         : cellx_(_cellx)
         , celly_(_celly)
-        , data_(static_cast<std::size_t>(_cellx * _celly),0)
+        , data_(_data)
     {
     }
-    Grid(const Grid& rhs) = delete ;
-    Grid& operator=(const Grid& rhs) = delete;
+    Grid(uint32_t _cellx, uint32_t _celly, std::initializer_list<contain_type> _data ):
+        cellx_(_cellx),celly_(_celly),data_(_data){}
+    Grid(const Grid& rhs) {
+        this->cellx_ = rhs.cellx_;
+        this->celly_ = rhs.celly_;
+        this->data_ = rhs.data_;
+    }
+    Grid& operator=(const Grid& rhs) {
+        rhs.swap(*this);
+        return *this;
+    }
 
     Grid(Grid&& rhs)noexcept{
         rhs.swap(*this);
@@ -86,40 +110,11 @@ public:
         swap(celly_ , rhs.celly_);
         swap(data_,rhs.data_);
     }
-    value_type at(uint32_t _x, uint32_t _y) const
-    {
-        if (_x >= cellx_ || _y >= celly_)
-            throw std::runtime_error("index overflow.");
-        return data_[cellx_ * _y + _x];
-    }
-    value_type& at(uint32_t _x, uint32_t _y)
-    {
-        if (_x >= cellx_ || _y >= celly_)
-            throw std::runtime_error("index overflow.");
-        return data_[cellx_ * _y + _x];
-    }
-    void resize(uint32_t _cellx, uint32_t _celly)noexcept{
-        if(_cellx == cellx_){
-            data_.resize(_cellx * _celly);
-        }else{
-            // re-layout
-            contain_type _new (_cellx * _celly,0);
-            uint32_t _minCellX = std::min(_cellx,cellx_);
-            uint32_t _minCellY = std::min(_celly,celly_);
-            for(int x = 0 ; x < _minCellX ; ++x)
-                for(int y = 0 ; y < _minCellY ; ++y)
-                    _new[y * _cellx + x] = data_[y * cellx_ + x];
-            data_.swap(_new);
-        }
-        cellx_ = _cellx;
-        celly_ = _celly;
-    }
-    inline bool contains(const GridPt _pt)const noexcept{
-        return contains(_pt.x,_pt.y);
-    }
-    constexpr bool contains(uint32_t _x, uint32_t _y)const noexcept{
-        return _x < cellx_ && _y < celly_;
-    }
+
+
+    inline uint32_t x() const noexcept{ return cellx_ ;}
+    inline uint32_t y() const noexcept{ return celly_ ;}
+    inline contain_type data() const noexcept{ return data_; }
 private:
     uint32_t cellx_ = { 0 };
     uint32_t celly_ = { 0 };

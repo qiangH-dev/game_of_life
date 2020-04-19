@@ -25,8 +25,20 @@ message NewCell{
     uint32 cell_y = 2;
 }
 
+//返回创建的entity id
 message NewCellId{
     uint32 met_id = 1;
+}
+
+//删除 cell
+message DelCell{
+    uint32 met_id = 1;
+    CellPos pos = 2;
+}
+
+message DelCellRes{
+    uint32 met_id = 1;  //删除的 entity id
+    CellPos pos = 2;    //删除的cell的 pos
 }
 
 /**************************************************************************************/
