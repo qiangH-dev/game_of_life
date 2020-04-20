@@ -17,6 +17,8 @@ namespace bb = net::phoneyou::gamelife::bb;
 
 class MultiplySimModel : public EntitySimModel
 {
+private:
+    enum CELL_TYPE{ DEATH = 0 , SURVIVE = 1, MULTIPLY = 2}; //cell status type
 public:
     MultiplySimModel();
 
@@ -31,14 +33,25 @@ protected:
     void entityAdded(EntityCreationTuple _entityTuple) override;
 private:
     //创建细胞实体
-    void createdCell(const gamelife::GridPt& pos , amster::EntityId& metId);
+    void createdCell(gamelife::GridPt &_cell , amster::EntityId& _metId);
     //细胞死亡
-    void deleteCell(const amster::EntityId& metId);
+    void deleteCell(const amster::EntityId& _metId);
+    void deleteCell(const gamelife::GridPt& _pt);
     //细胞繁衍
     void multiplyCell();
+
+    //
+    bool contains(uint32_t _x , uint32_t _y);
+    bool contains(const gamelife::GridPt &_pt);
+
+    CELL_TYPE cellType(uint32_t _x , uint32_t _y);
+    CELL_TYPE cellType(const gamelife::GridPt& _pt);
+
 private:
-    std::unordered_map<amster::EntityId , gamelife::GridPt > cell_id2pos;
-    std::unordered_map< gamelife::GridPt , amster::EntityId > cell_pos2id;
+
+    std::unordered_map<amster::EntityId , gamelife::Grid<gamelife::GridPt> > cell_id2Grid;
+//    std::unordered_map<amster::EntityId , gamelife::GridPt > cell_id2pos;
+    std::map< gamelife::GridPt , amster::EntityId > cell_pos2id;
 
 
 };
