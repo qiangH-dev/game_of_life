@@ -149,21 +149,21 @@ void MultiplySimModel::multiplyCell()
         if(type_cell == CELL_TYPE::DEATH){ //当前cell 已经是Survive 时，只处理death情况
             //TODO: delete cell
             deleteCell(_cell.first);
-            //判断邻居 cell
-            for(auto around_cell : _cell.second.data()){
-                if(!contains(around_cell)){//判断邻居cell 是否为 Suivive状态，是：不处理(不做重复操作)，否：处理
-                    auto around_type = cellType(around_cell);
-                    if(CELL_TYPE::MULTIPLY == around_type ){//只有非suivive状态的邻居cell 为 MULTIPLY 时才处理
-                        //TODO:created cell
-                        EntityId _metId;
-                        createdCell(around_cell , _metId );
-                        addCellId2posMap.insert( std::make_pair( _metId , around_cell ) ); //需添加的cell map
-                    }
+        }
+        //判断邻居 cell
+        for(auto around_cell : _cell.second.data()){
+            if(!contains(around_cell)){//判断邻居cell 是否为 Suivive状态，是：不处理(不做重复操作)，否：处理
+                auto around_type = cellType(around_cell);
+                if(CELL_TYPE::MULTIPLY == around_type ){//只有非suivive状态的邻居cell 为 MULTIPLY 时才处理
+                    //TODO:created cell
+                    EntityId _metId;
+                    createdCell(around_cell , _metId );
+                    addCellId2posMap.insert( std::make_pair( _metId , around_cell ) ); //需添加的cell map
                 }
-
             }
 
         }
+
     }
 
     //更新数据
