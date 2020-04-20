@@ -14,6 +14,7 @@
 MultiplySimModel::MultiplySimModel()
     : EntitySimModel("MultiplySim")
 {
+    LOGF(DBUG , "constructor multiply sim");
 }
 
 void MultiplySimModel::initialize()

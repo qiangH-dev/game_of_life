@@ -1,0 +1,39 @@
+{
+    "master_config": {
+        "check_descriptor_duplicate": true
+    },
+    "bbcenter_config": {
+        "service": "LMDB",
+        "lmdb": {
+            "db_path": "../share/amster/lmdb/bbs"
+        }
+    },
+    "notification_config": {
+        "service": "NNG"
+    },
+    "gbbinfra_config": {
+        "bbs": [
+            {
+                "dll_path": "AMSTERBB"
+            },
+            {
+                "dll_path": "GAMELIFEBB"
+            }
+        ]
+    },
+    "log_config": {
+        "active": true,
+        "ignore_levels": [
+            "DEBUG"
+        ],
+        "console": {
+            "ignore_levels": []
+        },
+        "rotating": {
+            "ignore_levels": [],
+            "file_path": "../share/amster/logs/master",
+            "max_files": "3",
+            "file_max_size": "1048576"
+        }
+    }
+}
