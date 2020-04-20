@@ -186,8 +186,7 @@ bool MultiplySimModel::contains(const gamelife::GridPt& _pt)
 {
     auto it = cell_pos2id.find(_pt); //判断pt cell 是否在 存活的集合中
 
-//    return it != cell_pos2id.end();
-    return true;
+    return it != cell_pos2id.end();
 }
 
 MultiplySimModel::CELL_TYPE MultiplySimModel::cellType(uint32_t _x, uint32_t _y)
