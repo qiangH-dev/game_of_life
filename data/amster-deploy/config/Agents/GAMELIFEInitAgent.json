@@ -42,7 +42,7 @@
           "arg_options":[
           ],
           "sim_options": {
-           "ExampleSimmodel": {
+           "MultiplySim": {
             "coroutine": true,
             "display_name": "MultiplySim",
             "accepted_tickmodes": ["Simulation"]
