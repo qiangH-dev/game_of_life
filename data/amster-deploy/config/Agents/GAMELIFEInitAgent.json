@@ -35,6 +35,7 @@
     "name":"MultiplySim",
     "priority":100,
     "entity_agent_extension":{
+      "accepted_names":["Cell"],
       "sim_model": {
         "providers": [
          {

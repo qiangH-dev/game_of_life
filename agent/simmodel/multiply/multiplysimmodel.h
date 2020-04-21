@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <absl/synchronization/mutex.h>
+#include <shared_mutex>
 
 #include <agent/entitysimmodel.h>
 using namespace amster::agent;
@@ -34,6 +34,7 @@ protected:
 private:
     //创建细胞实体
     void createdCell(gamelife::GridPt &_cell , amster::EntityId& _metId);
+    void createdCell(gamelife::GridPt &_cell);
     //细胞死亡
     void deleteCell(const amster::EntityId& _metId);
     void deleteCell(const gamelife::GridPt& _pt);
@@ -48,7 +49,7 @@ private:
     CELL_TYPE cellType(const gamelife::GridPt& _pt);
 
 private:
-
+    mutable std::shared_mutex mutex_;
     std::unordered_map<amster::EntityId , gamelife::Grid<gamelife::GridPt> > cell_id2Grid;
 //    std::unordered_map<amster::EntityId , gamelife::GridPt > cell_id2pos;
     std::map< gamelife::GridPt , amster::EntityId > cell_pos2id;

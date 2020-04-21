@@ -26,6 +26,7 @@ void MultiplySimModel::initialize()
         [this](const bb::message::NewCell& _req , bb::message::NewCellId& _res){
 
         EntityId _metId;
+        LOGF(DBUG , "Entity id [{}] --- POS:({},{}) " ,_metId, _req.cell_x() , _req.cell_y());
         gamelife::GridPt pt{ (int)_req.cell_x() , (int)_req.cell_y() };
         createdCell( pt , _metId);
 
@@ -91,8 +92,8 @@ void MultiplySimModel::entityAdded(EntitySimModel::EntityCreationTuple _entityTu
 void MultiplySimModel::createdCell(gamelife::GridPt &_cell, amster::gbbinfra::EntityId &_metId)
 {
 
-    createAgentEntity(bb::EntityType::Cell, _metId);
-
+    amster::StatusID _state_id = createAgentEntity(bb::EntityType::Cell, _metId);
+    LOGF(DBUG , "created entity id :[{}], STATUS:[{}]", _metId , (int)_state_id);
     bb::descriptor::Position _cellPos;
     bb::descriptor::CellInfo _cellInfo;
     _cellPos.set_x(_cell.x);
@@ -106,36 +107,49 @@ void MultiplySimModel::createdCell(gamelife::GridPt &_cell, amster::gbbinfra::En
     writeData(_metId, _cellInfo);
     setEntityReady(_metId);
 
-    //cell postion 于 entityid 的映射
-    gamelife::Grid<gamelife::GridPt> _grid{ uint32_t(_cell.x) , uint32_t(_cell.y) , _cell.around8() };
-    cell_pos2id.insert( {_cell , _metId} );
-    cell_id2Grid.insert(std::make_pair(_metId , _grid));
-
+    {
+        //cell postion 于 entityid 的映射
+        std::unique_lock<std::shared_mutex> _lk(mutex_);
+        gamelife::Grid<gamelife::GridPt> _grid{ uint32_t(_cell.x) , uint32_t(_cell.y) , _cell.around8() };
+        cell_pos2id.insert( {_cell , _metId} );
+        cell_id2Grid.insert(std::make_pair(_metId , _grid));
+    }
     LOGF(DBUG , "entity id:[], pos:({},{})" , _metId , _cell.x, _cell.y);
 
+}
+
+void MultiplySimModel::createdCell(gamelife::GridPt &_cell)
+{
+    EntityId _metId;
+    createdCell(_cell , _metId);
 }
 
 void MultiplySimModel::deleteCell(const amster::gbbinfra::EntityId &_metId)
 {
     deleteEntity(_metId);
 
-    //同步数据
-    auto it = cell_id2Grid.find( _metId );
-    gamelife::GridPt pt{ int(it->second.x()) , int(it->second.y()) };
-    cell_pos2id.erase( pt );
-    cell_id2Grid.erase( _metId );
-
+    {
+        //同步本地数据
+        std::unique_lock<std::shared_mutex> _lk(mutex_);
+        auto it = cell_id2Grid.find( _metId );
+        gamelife::GridPt pt{ int(it->second.x()) , int(it->second.y()) };
+        cell_pos2id.erase( pt );
+        cell_id2Grid.erase( _metId );
+    }
 }
 
 void MultiplySimModel::deleteCell(const gamelife::GridPt &_pt)
 {
     EntityId _metId;
-    auto it = cell_pos2id.find( _pt );
-    _metId = it->second;
-    gamelife::Grid<gamelife::GridPt> _grid {(uint32_t)_pt.x , (uint32_t)_pt.y , _pt.around8() };
-    cell_pos2id.erase( it );
-    cell_id2Grid.erase( _metId );
-
+    {
+        //同步本地数据
+        std::unique_lock< std::shared_mutex > _lk(mutex_);
+        auto it = cell_pos2id.find( _pt );
+        _metId = it->second;
+//        gamelife::Grid<gamelife::GridPt> _grid {(uint32_t)_pt.x , (uint32_t)_pt.y , _pt.around8() };
+        cell_pos2id.erase( it );
+        cell_id2Grid.erase( _metId );
+    }
     deleteEntity(_metId);
 
 }
@@ -143,36 +157,46 @@ void MultiplySimModel::deleteCell(const gamelife::GridPt &_pt)
 void MultiplySimModel::multiplyCell()
 {
 
-    std::map< EntityId , gamelife::GridPt > addCellId2posMap;
 
-    for(auto& _cell : cell_id2Grid ){
-        auto type_cell =cellType( _cell.second.x() , _cell.second.y());
-        if(type_cell == CELL_TYPE::DEATH){ //当前cell 已经是Survive 时，只处理death情况
-            //TODO: delete cell
-            deleteCell(_cell.first);
-        }
-        //判断邻居 cell
-        for(auto around_cell : _cell.second.data()){
-            if(!contains(around_cell)){//判断邻居cell 是否为 Suivive状态，是：不处理(不做重复操作)，否：处理
-                auto around_type = cellType(around_cell);
-                if(CELL_TYPE::MULTIPLY == around_type ){//只有非suivive状态的邻居cell 为 MULTIPLY 时才处理
-                    //TODO:created cell
-                    EntityId _metId;
-                    createdCell(around_cell , _metId );
-                    addCellId2posMap.insert( std::make_pair( _metId , around_cell ) ); //需添加的cell map
+    std::set< EntityId > delCellIdSet;
+    std::set< gamelife::GridPt > addCellPosSet;
+
+    {
+        std::shared_lock<std::shared_mutex> _lk(mutex_);
+        for(auto& _cell : cell_id2Grid ){
+            auto type_cell =cellType( _cell.second.x() , _cell.second.y());
+            if(type_cell == CELL_TYPE::DEATH){ //由于当前cell 状态 已经是Survive ，只处理下一步是death情况
+                //TODO: delete cell
+                delCellIdSet.insert(_cell.first);
+            }
+            //判断邻居 cell
+            for(auto around_cell : _cell.second.data()){//loop size : 8
+                if(!contains(around_cell)){//判断邻居cell 是否为 Survive 状态集合中，是(说明在survive集合中,不做重复处理)：不处理，否（当前状态：death）：处理（判断下一tick是否为multiply状态）
+                    auto around_type = cellType(around_cell);
+                    if(CELL_TYPE::MULTIPLY == around_type ){//只有非suivive状态的邻居cell 为 MULTIPLY 时才处理
+                        //TODO:created cell
+                        addCellPosSet.insert(around_cell);
+
+                    }
                 }
+
             }
 
         }
-
     }
 
-    //更新数据
-    for(auto& _cell : addCellId2posMap){
-        gamelife::Grid<gamelife::GridPt> _grid{ (uint32_t)_cell.second.x , (uint32_t)_cell.second.y , _cell.second.around8()};
-        cell_id2Grid.insert( std::make_pair(_cell.first , _grid) );
-        cell_pos2id.insert( {_cell.second , _cell.first} );
+    {
+        //更新数据
+        for(auto _pos : addCellPosSet){
+            createdCell( _pos );
+        }
+
+        for(auto _id : delCellIdSet){
+            deleteCell( _id );
+        }
     }
+
+
 
 
 }

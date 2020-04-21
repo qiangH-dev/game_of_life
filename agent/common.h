@@ -12,6 +12,7 @@ struct GridPt {
     GridPt() = default;
     GridPt(int _x , int _y ):x(_x),y(_y){}
     friend bool operator <(const GridPt& lv , const GridPt& rv);
+    friend bool operator ==(const GridPt& lv , const GridPt& rv);
 
     constexpr bool valid() const noexcept
     {
@@ -68,6 +69,10 @@ bool operator <(const GridPt& lv , const GridPt& rv){
     }else{
         return langle < rangel;
     }
+}
+
+bool operator ==(const GridPt& lv , const GridPt& rv){
+    return (lv.x == rv.x && lv.y == rv.y);
 }
 
 template <typename T>
