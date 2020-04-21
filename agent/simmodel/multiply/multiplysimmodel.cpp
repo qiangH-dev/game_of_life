@@ -25,8 +25,7 @@ void MultiplySimModel::initialize()
     registerRPCService<bb::message::NewCell , bb::message::NewCellId >("New_Cell",
         [this](const bb::message::NewCell& _req , bb::message::NewCellId& _res){
 
-        EntityId _metId;
-        LOGF(DBUG , "Entity id [{}] --- POS:({},{}) " ,_metId, _req.cell_x() , _req.cell_y());
+        EntityId _metId {0};
         gamelife::GridPt pt{ (int)_req.cell_x() , (int)_req.cell_y() };
         createdCell( pt , _metId);
 
@@ -107,6 +106,7 @@ void MultiplySimModel::createdCell(gamelife::GridPt &_cell, amster::gbbinfra::En
     writeData(_metId, _cellInfo);
     setEntityReady(_metId);
 
+
     {
         //cell postion 于 entityid 的映射
         std::unique_lock<std::shared_mutex> _lk(mutex_);
@@ -114,7 +114,8 @@ void MultiplySimModel::createdCell(gamelife::GridPt &_cell, amster::gbbinfra::En
         cell_pos2id.insert( {_cell , _metId} );
         cell_id2Grid.insert(std::make_pair(_metId , _grid));
     }
-    LOGF(DBUG , "entity id:[], pos:({},{})" , _metId , _cell.x, _cell.y);
+
+    LOGF(DBUG , "entity id:[{}], pos:({},{})" , _metId , _cell.x, _cell.y);
 
 }
 
