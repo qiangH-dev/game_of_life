@@ -98,7 +98,7 @@ void MultiplySimModel::createdCell(gamelife::GridPt &_cell, amster::gbbinfra::En
     _cellPos.set_x(_cell.x);
     _cellPos.set_y(_cell.y);
 
-    _cellInfo.set_type(bb::CellType_Enum::CellType_Enum_Survive);
+    _cellInfo.set_type(bb::CellType::Survive);
     _cellInfo.set_life_cycle(0);
 
 

@@ -32,9 +32,9 @@ void CellInitAgent::initialize()
 
         amster::StatusID status = writeSingltonDescriptorData(_dimensions);
         if(status == amster::StatusID::SUCCESS)
-            _res.set_status(bb::Status_Enum::Status_Enum_Success);
+            _res.set_status(bb::Status::Success);
         else
-            _res.set_status(bb::Status_Enum::Status_Enum_Failed);
+            _res.set_status(bb::Status::Failed);
     });
 
     //创建cell

@@ -1,0 +1,7 @@
+AMSTER_AGENT_CATEGORY = GAMELIFE
+
+AMSTER_AGENT_NAME = GAMELIFEInitQt
+
+AMSTER_LIB_DEPENDS += \
+    amsterqt \
+    gamelifebb_qt \
