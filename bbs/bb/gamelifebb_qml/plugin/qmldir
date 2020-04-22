@@ -1,0 +1,4 @@
+module net.phoneyou.GAMELIFE.BB
+plugin gamelifebbplugin
+typeinfo plugins.qmltypes
+
