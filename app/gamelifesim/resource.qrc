@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>config/amster.json</file>
+        <file>qml/as_functions.js</file>
+        <file>qml/bb_functions.js</file>
+        <file>config/standalone.json</file>
+        <file>config/standalone_master.json</file>
+        <file>config/standalone_slaver.json</file>
+        <file>qml/main.qml</file>
+        <file>qml/GridCell.qml</file>
+        <file>qml/GridViewer.qml</file>
+        <file>qml/MainContent.qml</file>
+    </qresource>
+</RCC>

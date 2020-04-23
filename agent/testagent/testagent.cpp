@@ -52,7 +52,6 @@ void TestAgent::initialize()
         bb::message::NewCell _cell;
         _cell.set_cell_x( 4+i );
         _cell.set_cell_y(5);
-        LOGF(DBUG , "pos:({},{})", 4+i , 5);
 //        vec.push_back(_cell);
         doRPC<bb::message::NewCellId , bb::message::NewCell>("New_Cell" , _cell ,
             [this](const bb::message::NewCellId& _res ,
